@@ -1,0 +1,19 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "purchaser.souls.naked": {
+      "PACKAGE_NAME": "com.chicken.bar.reserve.app.fghjh"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [],
+  "plugin_metadata": {
+    "purchaser.souls.naked": "1.3.5"
+  }
+}

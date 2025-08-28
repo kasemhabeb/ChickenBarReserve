@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chicken Delights - Catalog</title>
+	<script type="text/javascript" src="cordova.js"></script>
+    <link rel="stylesheet" href="fgfd.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #ff7b00;
+            --secondary: #8b4513;
+            --light: #fff9f0;
+            --dark: #333;
+            --success: #28a745;
+        }
+		
+		ul {margin-left:20px;}
+
+        body {
+            background-color: #f8f8f8;
+            color: var(--dark);
+            padding-bottom: 70px; /* Space for bottom menu */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .desktop-menu {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* Dish Grid */
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .dish-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dish-image {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dish-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .dish-card:hover .dish-image img {
+            transform: scale(1.05);
+        }
+
+        .dish-content {
+            padding: 15px;
+        }
+
+        .dish-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .dish-ingredients {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            height: 40px;
+            overflow: hidden;
+        }
+
+        .dish-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dish-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .dish-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-sm {
+            padding: 5px 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e56a00;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a3b10;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Bottom Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .menu-item.active {
+            color: var(--primary);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Cart & Favorites */
+        .cart-item, .favorite-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Map */
+        #map {
+            height: 300px;
+            background: #eee;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        /* About Section */
+        .about-content {
+            line-height: 1.6;
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 576px) {
+            .dishes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .desktop-menu {
+                display: flex;
+                gap: 20px;
+            }
+            
+            .desktop-menu a {
+                color: white;
+                text-decoration: none;
+                font-weight: 500;
+            }
+            
+            .mobile-menu {
+                display: none;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+            
+            .dishes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .dishes-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-drumstick-bite"></i>
+                    <span>Chicken Bar Reserve</span>
+                </div>
+                <div class="desktop-menu">
+                    <a href="#" class="menu-link" data-target="dishes"><i class="fas fa-utensils"></i> Menu</a>
+                    <a href="#" class="menu-link" data-target="favorites"><i class="fas fa-heart"></i> Favorites</a>
+                    <a href="#" class="menu-link" data-target="cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="#" class="menu-link" data-target="about"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="#" class="menu-link" data-target="location"><i class="fas fa-map-marker-alt"></i> Location</a>
+                    <a href="#" class="menu-link" data-target="reservation"><i class="fas fa-calendar-alt"></i> Reserve</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Dishes Section -->
+            <section id="dishes" class="content-section">
+                <h2 class="section-title">Our Chicken Dishes</h2>
+                <div class="dishes-grid" id="dishes-container">
+                    <!-- Dishes will be generated here -->
+                </div>
+            </section>
+
+            <!-- Favorites Section -->
+            <section id="favorites" class="content-section" style="display: none;">
+                <h2 class="section-title">Your Favorite Dishes</h2>
+                <div id="favorites-container">
+                    <!-- Favorites will be displayed here -->
+                </div>
+            </section>
+
+            <!-- Cart Section -->
+            <section id="cart" class="content-section" style="display: none;">
+                <h2 class="section-title">Your Cart</h2>
+                <div id="cart-container">
+                    <!-- Cart items will be displayed here -->
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button id="reserve-btn" class="btn btn-primary">Proceed to Reservation</button>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="content-section" style="display: none;">
+                <h2 class="section-title">About Us</h2>
+                <div class="about-content">
+                    <p>WERKEN BIJ THE CHICKEN BAR
+					<br /><br />
+The Chicken Bar is altijd op zoek naar talent voor zowel de bediening als keuken. Ben jij spontaan, sociaal, spreek je zowel Nederlands als Engels, wil je goed verdienen én wil je werken in een superleuk team? Neem dan nu contact met ons op!</p>
+                </div>
+            </section>
+
+            <!-- Location Section -->
+            <section id="location" class="content-section" style="display: none;">
+                <h2 class="section-title">Find Us</h2>
+                <!--div id="map"></div-->
+<img src="map.png" style="width:100%; max-width:1000px;" />
+<br /><br />
+Adres<br />
+Voetboogstraat 6-8<br />
+1012 XL Amsterdam<br /><br />
+Openingstijden
+We are open 7 days a week<br />
+from 1 p.m. to 10 p.m.<br />
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <button id="generate-location" class="btn btn-primary" style="display:none;">Show Random Location</button>
+                </div>
+            </section>
+
+            <!-- Reservation Section -->
+            <section id="reservation" class="content-section" style="display: none;">
+                <h2 class="section-title">Make a Reservation</h2>
+                <form id="reservation-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <input type="time" id="time" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Number of Guests</label>
+                        <input type="number" id="guests" class="form-control" min="1" max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Selected Dishes</label>
+                        <div id="reservation-dishes">
+                            <!-- Selected dishes will be listed here -->
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Complete Reservation</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Menu -->
+    <nav class="mobile-menu">
+        <a href="#" class="menu-item active" data-target="dishes">
+            <i class="fas fa-utensils"></i>
+            <span>Menu</span>
+        </a>
+        <a href="#" class="menu-item" data-target="favorites">
+            <i class="fas fa-heart"></i>
+            <span>Favorites</span>
+        </a>
+        <a href="#" class="menu-item" data-target="cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+        </a>
+        <a href="#" class="menu-item" data-target="about">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        <a href="#" class="menu-item" data-target="location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Location</span>
+        </a>
+        <a href="#" class="menu-item" data-target="reservation">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Reserve</span>
+        </a>
+    </nav>
+
+    <!-- Reservation Modal -->
+    <div id="reservation-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reservation Complete!</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="reservation-details">
+                <!-- Reservation details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample chicken dishes data with image URLs
+        const chickenDishes = [
+            { id: 1, name: "Classic Roast Chicken", ingredients: "Whole chicken, rosemary, garlic, lemon, olive oil", price: 15.90, image: "1.avif" },
+            { id: 2, name: "Chicken Parmesan", ingredients: "Chicken breast, tomato sauce, mozzarella, parmesan, basil", price: 16.50, image: "2.png" },
+            { id: 3, name: "Spicy Chicken Curry", ingredients: "Chicken thighs, coconut milk, curry spices, vegetables", price: 14.75, image: "3.avif" },
+            { id: 4, name: "Chicken Caesar Salad", ingredients: "Grilled chicken, romaine lettuce, parmesan, croutons, Caesar dressing", price: 12.25, image: "4.avif" },
+            { id: 5, name: "BBQ Chicken Wings", ingredients: "Chicken wings, BBQ sauce, spices, celery sticks", price: 11.90, image: "5.png" },
+            { id: 6, name: "Chicken Tikka Masala", ingredients: "Marinated chicken, yogurt, tomatoes, cream, spices", price: 15.25, image: "6.avif" },
+            { id: 7, name: "Lemon Herb Chicken", ingredients: "Chicken breast, lemon, herbs, garlic, butter", price: 13.75, image: "7.png" },
+            { id: 8, name: "Chicken Fajitas", ingredients: "Chicken strips, bell peppers, onions, tortillas, spices", price: 14.50, image: "8.png" },
+            { id: 9, name: "Chicken Alfredo Pasta", ingredients: "Chicken, fettuccine, Alfredo sauce, parmesan, parsley", price: 15.00, image: "9.avif" },
+            { id: 10, name: "Honey Mustard Chicken", ingredients: "Chicken thighs, honey, mustard, garlic, herbs", price: 13.25, image: "10.png" },
+            { id: 11, name: "Chicken Stir Fry", ingredients: "Chicken breast, vegetables, soy sauce, ginger, garlic", price: 14.00, image: "11.png" },
+            { id: 12, name: "Chicken Pot Pie", ingredients: "Chicken, vegetables, creamy sauce, pastry crust", price: 16.25, image: "12.png" },
+            { id: 13, name: "Buffalo Chicken Wrap", ingredients: "Breaded chicken, buffalo sauce, lettuce, ranch, tortilla", price: 11.50, image: "13.avif" },
+            { id: 14, name: "Coq au Vin", ingredients: "Chicken, red wine, mushrooms, bacon, onions, herbs", price: 17.50, image: "14.png" },
+            { id: 15, name: "Chicken Shawarma", ingredients: "Marinated chicken, pita, garlic sauce, vegetables", price: 12.75, image: "15.avif" },
+            { id: 16, name: "Chicken Kebabs", ingredients: "Chicken, bell peppers, onions, marinade, skewers", price: 13.50, image: "16.avif" },
+            { id: 17, name: "Chicken Marsala", ingredients: "Chicken breast, mushrooms, Marsala wine, cream", price: 16.00, image: "17.png" },
+            { id: 18, name: "Chicken Enchiladas", ingredients: "Chicken, tortillas, enchilada sauce, cheese, beans", price: 14.25, image: "18.png" },
+            { id: 19, name: "Chicken Satay", ingredients: "Chicken skewers, peanut sauce, cucumber relish", price: 12.50, image: "19.png" },
+            { id: 20, name: "Chicken Cordon Bleu", ingredients: "Chicken breast, ham, Swiss cheese, breadcrumbs", price: 16.75, image: "20.avif" }
+        ];
+
+        // DOM elements
+        const dishesContainer = document.getElementById('dishes-container');
+        const favoritesContainer = document.getElementById('favorites-container');
+        const cartContainer = document.getElementById('cart-container');
+        const reservationDishes = document.getElementById('reservation-dishes');
+        const reservationForm = document.getElementById('reservation-form');
+        const generateLocationBtn = document.getElementById('generate-location');
+        const reserveBtn = document.getElementById('reserve-btn');
+        const mapDiv = document.getElementById('map');
+        const modal = document.getElementById('reservation-modal');
+        const closeModal = document.querySelector('.close');
+        const reservationDetails = document.getElementById('reservation-details');
+        const menuItems = document.querySelectorAll('.menu-item, .menu-link');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        // Initialize favorites and cart from localStorage
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Generate dish cards
+        function generateDishCards() {
+            dishesContainer.innerHTML = '';
+            chickenDishes.forEach(dish => {
+                const isFavorite = favorites.includes(dish.id);
+                const inCart = cart.some(item => item.id === dish.id);
+                
+                const dishCard = document.createElement('div');
+                dishCard.className = 'dish-card';
+                dishCard.innerHTML = `
+                    <div class="dish-image">
+                        <img src="${dish.image}" alt="${dish.name}">
+                    </div>
+                    <div class="dish-content">
+                        <h3 class="dish-title">${dish.name}</h3>
+                        <p class="dish-ingredients">${dish.ingredients}</p>
+                        <div class="dish-footer">
+                            <div class="dish-price">€${dish.price.toFixed(2)}</div>
+                            <div class="dish-actions">
+                                <button class="btn btn-sm ${isFavorite ? 'btn-primary' : 'btn-outline'} favorite-btn" data-id="${dish.id}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="btn btn-sm ${inCart ? 'btn-primary' : 'btn-outline'} cart-btn" data-id="${dish.id}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                dishesContainer.appendChild(dishCard);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', toggleFavorite);
+            });
+            
+            document.querySelectorAll('.cart-btn').forEach(btn => {
+                btn.addEventListener('click', toggleCart);
+            });
+        }
+
+        // Toggle favorite
+        function toggleFavorite(e) {
+            const dishId = parseInt(e.currentTarget.getAttribute('data-id'));
+            const index = favorites.indexOf(dishId);
+            
+            if (index === -1) {
+                favorites.push(dishId);
+                e.currentTarget.classList.remove('btn-outline');
+                e.currentTarget.classList.add('btn-primary');
+            } else {
+                favorites.splice(index, 1);
+                e.currentTarget.classList.remove('btn-primary');
+                e.currentTarget.classList.add('btn-outline');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavorites();
+        }
+
+        // Update favorites display
+        function updateFavorites() {
+            favoritesContainer.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                favoritesContainer.innerHTML = '<p style="text-align: center;">No favorites yet. Add some dishes you love!</p>';
+                return;
+            }
+            
+            favorites.forEach(id => {
+                const dish = chickenDishes.find(d => d.id === id);
+                if (dish) {
+                    const favItem = document.createElement('div');
+                    favItem.className = 'favorite-item';
+                    favItem.innerHTML = `
+                        <div>
+                            <h4>${dish.name}</h4>
+                            <p>${dish.ingredients}</p>
+                        </div>
+                        <div>
+                            <span class="dish-price">€${dish.price.toFixed(2)}</span>
+                            <button class="btn btn-sm btn-outline cart-btn" data-id="${dish.id}">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </div>
+                    `;
+                    favoritesContainer.appendChild(favItem);
+                }
+            });
+            
+            // Add event listeners to cart buttons in favorites
+            document.querySelectorAll('#favorites-container .cart-btn').forEach(btn => {
+                btn.addEventListener('click', toggleCart);
+            });
+        }
+
+        // Toggle cart
+        function toggleCart(e) {
+            const dishId = parseInt(e.currentTarget.getAttribute('data-id'));
+            const index = cart.findIndex(item => item.id === dishId);
+            
+            if (index === -1) {
+                const dish = chickenDishes.find(d => d.id === dishId);
+                cart.push({...dish, quantity: 1});
+                e.currentTarget.classList.remove('btn-outline');
+                e.currentTarget.classList.add('btn-primary');
+                e.currentTarget.innerHTML = '<i class="fas fa-check"></i>';
+            } else {
+                cart.splice(index, 1);
+                e.currentTarget.classList.remove('btn-primary');
+                e.currentTarget.classList.add('btn-outline');
+                e.currentTarget.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        // Update cart display
+        function updateCart() {
+            cartContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p style="text-align: center;">Your cart is empty. Add some delicious dishes!</p>';
+                reserveBtn.style.display = 'none';
+                return;
+            }
+            
+            reserveBtn.style.display = 'block';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div>
+                        <h4>${item.name}</h4>
+                        <p>€${item.price.toFixed(2)} × ${item.quantity}</p>
+                    </div>
+                    <div>
+                        <span class="dish-price">€${(item.price * item.quantity).toFixed(2)}</span>
+                        <button class="btn btn-sm btn-outline remove-cart-btn" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                cartContainer.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+            
+            // Add total
+            const totalElement = document.createElement('div');
+            totalElement.style.marginTop = '15px';
+            totalElement.style.padding = '10px';
+            totalElement.style.borderTop = '2px solid #eee';
+            totalElement.style.textAlign = 'right';
+            totalElement.style.fontWeight = 'bold';
+            totalElement.innerHTML = `Total: €${total.toFixed(2)}`;
+            cartContainer.appendChild(totalElement);
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-cart-btn').forEach(btn => {
+                btn.addEventListener('click', removeFromCart);
+            });
+            
+            // Update reservation dishes
+            updateReservationDishes();
+        }
+
+        // Remove from cart
+        function removeFromCart(e) {
+            const dishId = parseInt(e.currentTarget.getAttribute('data-id'));
+            const index = cart.findIndex(item => item.id === dishId);
+            
+            if (index !== -1) {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+                generateDishCards(); // Update cart buttons in dish cards
+            }
+        }
+
+        // Update reservation dishes list
+        function updateReservationDishes() {
+            reservationDishes.innerHTML = '';
+            
+            if (cart.length === 0) {
+                reservationDishes.innerHTML = '<p>No dishes selected yet.</p>';
+                return;
+            }
+            
+            const list = document.createElement('ul');
+            cart.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+                list.appendChild(listItem);
+            });
+            reservationDishes.appendChild(list);
+        }
+
+        // Generate random location
+        function generateRandomLocation() {
+            const locations = [
+                "123 Chicken Street, Paris",
+                "456 Poultry Avenue, Lyon",
+                "789 Roaster Road, Marseille",
+                "321 Wing Street, Toulouse",
+                "654 Cluck Boulevard, Nice"
+            ];
+            
+            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+            mapDiv.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #ff7b00; margin-bottom: 15px;"></i>
+                    <h3>${randomLocation}</h3>
+                    <p>Open today: 11:00 AM - 10:00 PM</p>
+                </div>
+            `;
+        }
+
+        // Handle reservation form submission
+        function handleReservation(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const guests = document.getElementById('guests').value;
+            
+            // Format reservation details
+            let detailsHTML = `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Time:</strong> ${time}</p>
+                <p><strong>Number of Guests:</strong> ${guests}</p>
+                <p><strong>Dishes:</strong></p>
+                <ul>
+            `;
+            
+            cart.forEach(item => {
+                detailsHTML += `<li>${item.name} - €${item.price.toFixed(2)}</li>`;
+            });
+            
+            detailsHTML += `</ul>`;
+            
+            // Calculate total
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            detailsHTML += `<p><strong>Total: €${total.toFixed(2)}</strong></p>`;
+            
+            reservationDetails.innerHTML = detailsHTML;
+            modal.style.display = 'flex';
+            
+            // Clear form and cart
+            reservationForm.reset();
+            cart = [];
+            localStorage.removeItem('cart');
+            updateCart();
+            generateDishCards();
+        }
+
+        // Navigation functions
+        function showSection(sectionId) {
+            contentSections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active menu item
+            menuItems.forEach(item => {
+                if (item.getAttribute('data-target') === sectionId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Event listeners
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = this.getAttribute('data-target');
+                showSection(targetSection);
+            });
+        });
+
+        generateLocationBtn.addEventListener('click', generateRandomLocation);
+        reserveBtn.addEventListener('click', function() {
+            showSection('reservation');
+        });
+        reservationForm.addEventListener('submit', handleReservation);
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Initialize the page
+        generateDishCards();
+        updateFavorites();
+        updateCart();
+        showSection('dishes');
+    </script>
+</body>
+</html>
